@@ -3,23 +3,253 @@ package com.example.saper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
+import kotlin.random.Random.Default.nextInt
+
+class Tile(px: Int, py: Int, pstate: Int, psize: Int, pcov: Boolean = true) {
+
+    private var x: Int? = null
+    private var y: Int? = null
+    private var state: Int? = null
+    private var cov: Boolean? = null
+    private var size: Int? = null
+    private var flagged: Boolean = false
+    private var triggered: Boolean = false
+    private var tmpCalc: Boolean = false
+    private var finalCalc: Boolean = false
+    var topTile: Tile? = null
+    var bottomTile: Tile? = null
+    var leftTile: Tile? = null
+    var rightTile: Tile? = null
+    var topLeftTile: Tile? = null
+    var topRightTile: Tile? = null
+    var bottomLeftTile: Tile? = null
+    var bottomRightTile: Tile? = null
+
+    init {
+        x = px
+        y = py
+        state = pstate
+        cov = pcov
+        size = psize
+    }
+
+    private fun value(): Int? {
+        var tmpValue: Int? = 0
+        if (this.state == 1) {
+            tmpValue = 9
+        } else {
+            if (topTile != null) {
+                if (tmpValue != null) {
+                    if ((topTile!!.state == 0) or (topTile!!.state == 1)) {
+                        tmpValue += topTile!!.state!!
+                    } else if (tmpValue != null) {
+                        if (topTile!!.state == 19) {
+                            tmpValue += 1
+                        }
+                    }
+                }
+            }
+            if (bottomTile != null) {
+                if bottomTile.state in (0, 1):
+                tmpValue += bottomTile.state
+                elif bottom_tile.state == 19:
+                tmpValue += 1
+            }
+            if (leftTile != null) {
+                if leftTile.state in (0, 1):
+                tmpValue += leftTile.state
+                elif left_tile.state == 19:
+                tmpValue += 1
+            }
+            if (rightTile != null) {
+                if rightTile.state in (0, 1):
+                tmpValue += rightTile.state
+                elif right_tile.state == 19:
+                tmpValue += 1
+            }
+            if (topLeftTile != null) {
+                if topLeftTile.state in (0, 1):
+                tmpValue += topLeftTile.state
+                elif top_left_tile.state == 19:
+                tmpValue += 1
+            }
+            if (topRightTile != null) {
+                if topRightTile.state in (0, 1):
+                tmpValue += topRightTile.state
+                elif top_right_tile.state == 19:
+                tmpValue += 1
+            }
+            if (bottomLeftTile != null) {
+                if bottomLeftTile.state in (0, 1):
+                tmpValue += bottomLeftTile.state
+                elif bottom_left_tile.state == 19:
+                tmpValue += 1
+            }
+            if (bottomRightTile != null) {
+                if bottomRightTile.state in (0, 1):
+                tmpValue += bottomRightTile.state
+                elif bottom_right_tile.state == 19:
+                tmpValue += 1
+            }
+        }
+        return tmpValue?.plus(10)
+    }
+
+    private fun calculateValues() {
+        tmpValueCalc()
+        finalValueCalc()
+    }
+
+    private fun tmpValueCalc() {
+        if (!tmpCalc) {
+            state = _value()
+            tmpCalc = true
+            // recursively check bordering Tiles calculate their
+            // transitional state value and continue
+            // top_tile
+            if (topTile != null) {
+                topTile.tmp_value_calc()
+            }
+            // bottom_tile
+            if (bottomTile != null) {
+                bottomTile.tmp_value_calc()
+            }
+            // left_tile
+            if (leftTile != null) {
+                leftTile.tmp_value_calc()
+            }
+            // right_tile
+            if (rightTile != null) {
+                rightTile.tmp_value_calc()
+            }
+        }
+    }
+
+    private fun finalValueCalc() {
+        if (!finalCalc) {
+            state -= 10
+            finalCalc = True
+            // recursively check bordering Tiles calculate their
+            // final state value and continue
+            // top_tile
+            if (topTile != null) {
+                topTile.final_value_calc()
+            }
+            // bottom_tile
+            if (bottomTile != null) {
+                bottomTile.final_value_calc()
+            }
+            // left_tile
+            if (leftTile != null) {
+                leftTile.final_value_calc()
+            }
+            // right_tile
+            if (rightTile != null) {
+                rightTile.final_value_calc()
+            }
+        }
+    }
+}
 
 class Saper8x8 : AppCompatActivity() {
-    private var row0 = arrayOfNulls<ImageButton?>(8)
-    private var row1 = arrayOfNulls<ImageButton?>(8)
-    private var row2 = arrayOfNulls<ImageButton?>(8)
-    private var row3 = arrayOfNulls<ImageButton?>(8)
-    private var row4 = arrayOfNulls<ImageButton?>(8)
-    private var row5 = arrayOfNulls<ImageButton?>(8)
-    private var row6 = arrayOfNulls<ImageButton?>(8)
-    private var row7 = arrayOfNulls<ImageButton?>(8)
-    private var buttonGrid = arrayOf(row0, row1, row2, row3, row4, row5, row6, row7)
+    private val x = 8
+    private val y = 8
+    private val nrMines = 10
+
+    private var buttonRow0 = arrayOfNulls<ImageButton?>(8)
+    private var buttonRow1 = arrayOfNulls<ImageButton?>(8)
+    private var buttonRow2 = arrayOfNulls<ImageButton?>(8)
+    private var buttonRow3 = arrayOfNulls<ImageButton?>(8)
+    private var buttonRow4 = arrayOfNulls<ImageButton?>(8)
+    private var buttonRow5 = arrayOfNulls<ImageButton?>(8)
+    private var buttonRow6 = arrayOfNulls<ImageButton?>(8)
+    private var buttonRow7 = arrayOfNulls<ImageButton?>(8)
+    private var buttonGrid = arrayOf(buttonRow0, buttonRow1, buttonRow2, buttonRow3, buttonRow4, buttonRow5, buttonRow6, buttonRow7)
+
+    private var minefield = Array(8) {Array(8) {0}}
+
+    private var tileRow0 = arrayOfNulls<Tile?>(8)
+    private var tileRow1 = arrayOfNulls<Tile?>(8)
+    private var tileRow2 = arrayOfNulls<Tile?>(8)
+    private var tileRow3 = arrayOfNulls<Tile?>(8)
+    private var tileRow4 = arrayOfNulls<Tile?>(8)
+    private var tileRow5 = arrayOfNulls<Tile?>(8)
+    private var tileRow6 = arrayOfNulls<Tile?>(8)
+    private var tileRow7 = arrayOfNulls<Tile?>(8)
+    private var tileGrid = arrayOf(tileRow0, tileRow1, tileRow2, tileRow3, tileRow4, tileRow5, tileRow6, tileRow7)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_saper8x8)
         initButtonArray()
+        initMinefield()
+
     }
+
+    private fun initMinefield() {
+        // addition of mines to the field
+        var j = 0
+        while (j < nrMines) {
+            var a = nextInt(1, x)
+            var b = nextInt(1, y)
+            if (minefield[a][b] == 0) {
+                minefield[a][b] = 1
+            }
+            j++
+        }
+        // Tile initialization
+        var tmp1 = x-1
+        var tmp2 = y-1
+        for (i in 0..tmp1) {
+            for (j in 0..tmp2) {
+                tileGrid[i][j] = Tile(x=i, y=j, state=minefield[i][j], cov=true, size=50,
+                                      flagged=false, triggered=false, tmp_calc=false,
+                                      final_calc=false)
+            }
+        }
+        // Tile linking
+        // Horizontal linking
+        tmp1 = x-1
+        tmp2 = y-2
+        for (i in 1..tmp1) {
+            for (j in 1..tmp2) {
+                tileGrid[i][j]?.rightTile = tileGrid[i][j + 1]
+                tileGrid[i][j + 1]?.leftTile = tileGrid[i][j]
+            }
+        }
+        // Vertical linking
+        tmp1 = x-2
+        tmp2 = y-1
+        for (i in 1..tmp1) {
+            for (j in 1..tmp2) {
+                tileGrid[i][j]?.bottomTile = tileGrid[i + 1][j]
+                tileGrid[i][j + 1]?.topTile = tileGrid[i][j]
+            }
+        }
+        // Bottom-Right and Top-Left cross linking
+        tmp1 = x-2
+        tmp2 = y-2
+        for (i in 1..tmp1) {
+            for (j in 1..tmp2) {
+                tileGrid[i][j]?.bottomRightTile = tileGrid[i + 1][j + 1]
+                tileGrid[i][j + 1]?.topLeftTile = tileGrid[i][j]
+            }
+        }
+        // Bottom-Left and Top-Right cross linking
+        tmp1 = x-1
+        tmp2 = y-2
+        for (i in 1..tmp1) {
+            for (j in 1..tmp2) {
+                tileGrid[i][j]?.bottomLeftTile = tileGrid[i - 1][j + 1]
+                tileGrid[i][j + 1]?.topRightTile = tileGrid[i][j]
+            }
+        }
+        // Calculation of values for each field
+//        board[0][0].calculate_values()
+//        root.mainloop()
+    }
+
+
 
     private fun initButtonArray() {
         this.buttonGrid[0][0] = findViewById(R.id.imageButton00)
