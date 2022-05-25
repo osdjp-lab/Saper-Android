@@ -6,7 +6,7 @@ import android.util.Log
 import android.widget.ImageButton
 import kotlin.random.Random.Default.nextInt
 
-class Saper8x8 : AppCompatActivity() {
+class SaperActivity : AppCompatActivity() {
     private val x = 8
     private val y = 8
     private val nrMines = 10
@@ -39,7 +39,7 @@ class Saper8x8 : AppCompatActivity() {
         private var y: Int = py
         private var state: Int = pstate
         private var cov: Boolean = pcov
-        var flagged: Boolean = false
+        private var flagged: Boolean = false
         private var triggered: Boolean = false
         private var tmpCalc: Boolean = false
         private var finalCalc: Boolean = false
@@ -243,7 +243,7 @@ class Saper8x8 : AppCompatActivity() {
                 for (tile in item) {
                     tmp += tile?.state.toString() + " "
                 }
-                 Log.println(Log.INFO, "Array", tmp)
+                Log.println(Log.INFO, "Array", tmp)
             }
         }
 
@@ -293,20 +293,20 @@ class Saper8x8 : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_saper8x8)
+        setContentView(R.layout.activity_saper)
         initButtonArray()
         initMinefield()
     }
 
     private fun initMinefield() {
         // addition of mines to the field
-        var j = 0
-        while (j < nrMines) {
+        var n = 0
+        while (n < nrMines) {
             val a = nextInt(1, x)
             val b = nextInt(1, y)
             if (minefield[a][b] == 0) {
                 minefield[a][b] = 1
-                j++
+                n++
             }
         }
         // Tile initialization

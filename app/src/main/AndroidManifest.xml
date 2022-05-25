@@ -10,13 +10,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Saper">
         <activity
-            android:name=".Saper"
+            android:name=".SaperActivity"
             android:exported="false" />
         <activity
-            android:name=".Saper5x5"
+            android:name=".SaperTrianglesActivity"
             android:exported="false" />
         <activity
-            android:name=".Saper8x8"
+            android:name=".SaperHexagonsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SaperSquaresActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

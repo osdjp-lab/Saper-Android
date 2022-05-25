@@ -12,8 +12,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Called when the user presses the Start Game button */
-    fun startGame(view: View) {
-        val intent = Intent(this, Saper8x8::class.java).apply{}
+    fun startGame(@Suppress("UNUSED_PARAMETER")view: View) {
+        val intent = Intent(this, SaperSquaresActivity::class.java).apply{}
         startActivity(intent)
     }
 }
