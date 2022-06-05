@@ -1,6 +1,6 @@
 package com.example.saper
 
-interface SaperModel {
+interface SaperInterface {
 
     interface flag
     interface uncover

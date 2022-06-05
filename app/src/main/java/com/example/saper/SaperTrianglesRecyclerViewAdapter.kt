@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
 
-class SaperHexagonsRecyclerViewAdapter internal constructor(context: Context?, data: Array<String>) :
-    RecyclerView.Adapter<SaperHexagonsRecyclerViewAdapter.ViewHolder>() {
+class SaperTrianglesRecyclerViewAdapter internal constructor(context: Context?, data: Array<String>) :
+    RecyclerView.Adapter<SaperTrianglesRecyclerViewAdapter.ViewHolder>() {
     private val mData: Array<String>
     private val mInflater: LayoutInflater
     private var mClickListener: ItemClickListener? = null
@@ -24,7 +24,7 @@ class SaperHexagonsRecyclerViewAdapter internal constructor(context: Context?, d
 
     // inflates the cell layout from xml when needed
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = mInflater.inflate(R.layout.recyclerview_hexagonal_tile, parent, false)
+        val view: View = mInflater.inflate(R.layout.recyclerview_square_tile, parent, false)
         return ViewHolder(view)
     }
 
@@ -43,7 +43,6 @@ class SaperHexagonsRecyclerViewAdapter internal constructor(context: Context?, d
         View.OnClickListener, View.OnLongClickListener {
 
         var myTextView: TextView
-
 
         override fun onClick(view: View?) {
             mClickListener!!.onItemClick(view, bindingAdapterPosition)

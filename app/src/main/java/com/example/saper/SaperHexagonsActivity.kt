@@ -1,16 +1,15 @@
 package com.example.saper
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.saper.MyRecyclerViewAdapter.ItemClickListener
+import com.example.saper.SaperHexagonsRecyclerViewAdapter.ItemClickListener
 
 class SaperHexagonsActivity : AppCompatActivity(), ItemClickListener {
-    var adapter: MyRecyclerViewAdapter? = null
+    var adapter: SaperHexagonsRecyclerViewAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +71,7 @@ class SaperHexagonsActivity : AppCompatActivity(), ItemClickListener {
         val recyclerView = findViewById<RecyclerView>(R.id.board)
         val numberOfColumns = 6
         recyclerView.layoutManager = GridLayoutManager(this, numberOfColumns)
-        adapter = MyRecyclerViewAdapter(this, data)
+        adapter = SaperHexagonsRecyclerViewAdapter(this, data)
         adapter!!.setClickListener(this)
         recyclerView.adapter = adapter
     }

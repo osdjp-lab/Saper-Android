@@ -7,8 +7,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class SaperTrianglesActivity : AppCompatActivity(), SquaresRecyclerViewAdapter.ItemClickListener {
-    var adapter: SquaresRecyclerViewAdapter? = null
+class SaperTrianglesActivity : AppCompatActivity(), SaperSquaresRecyclerViewAdapter.ItemClickListener {
+    var adapter: SaperSquaresRecyclerViewAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
