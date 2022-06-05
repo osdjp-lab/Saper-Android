@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
 
-class MyRecyclerViewAdapter internal constructor(context: Context?, data: Array<String>) :
-    RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder>() {
+class HexagonsRecyclerViewAdapter internal constructor(context: Context?, data: Array<String>) :
+    RecyclerView.Adapter<HexagonsRecyclerViewAdapter.ViewHolder>() {
     private val mData: Array<String>
     private val mInflater: LayoutInflater
     private var mClickListener: ItemClickListener? = null
