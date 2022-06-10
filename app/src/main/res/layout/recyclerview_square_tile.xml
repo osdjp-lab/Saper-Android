@@ -13,13 +13,4 @@
         android:gravity="center"
         android:background="@color/white"/>
 
-
-    <!--    <ImageButton-->
-    <!--        android:id="@+id/single_tile"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:background="@color/purple_500"-->
-    <!--        android:gravity="center"-->
-    <!--        android:src="@drawable/covered_tile" />-->
-
 </LinearLayout>
