@@ -1,6 +1,6 @@
 package com.example.saper
 
-data class SquareTile(
+data class SaperSquaresTile(
     var x: Int,
     var y: Int,
     var state: Int,
@@ -14,12 +14,12 @@ data class SquareTile(
     var finalCalc: Boolean = false
 
     /** Surrounding SquareTiles */
-    var topTile: SquareTile? = null
-    var bottomTile: SquareTile? = null
-    var leftTile: SquareTile? = null
-    var rightTile: SquareTile? = null
-    var topLeftTile: SquareTile? = null
-    var topRightTile: SquareTile? = null
-    var bottomLeftTile: SquareTile? = null
-    var bottomRightTile: SquareTile? = null
+    var topTile: SaperSquaresTile? = null
+    var bottomTile: SaperSquaresTile? = null
+    var leftTile: SaperSquaresTile? = null
+    var rightTile: SaperSquaresTile? = null
+    var topLeftTile: SaperSquaresTile? = null
+    var topRightTile: SaperSquaresTile? = null
+    var bottomLeftTile: SaperSquaresTile? = null
+    var bottomRightTile: SaperSquaresTile? = null
 }
