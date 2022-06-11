@@ -8,30 +8,247 @@ class SaperSquaresModel(
     private val nrMines: Int = 10
 ) {
 
+    var isInitialized = false
+    var nrInitUncoveredEmptyFields = 4
     private var minefield = Array(x) {Array(y) {0}}
-    var tileGrid = Array(x){Array<SquareTile?>(y){null}}
+    var tileGrid = Array(x){Array<SaperSquaresTile?>(y){null}}
 
-    init {
-        initMinefield()
-    }
+    class Coordinate (
+        val x: Int,
+        val y: Int
+    )
 
-    private fun initMinefield() {
-        // addition of mines to the field
-        var n = 0
-        while (n < nrMines) {
-            val a = nextInt(1, x)
-            val b = nextInt(1, y)
-            if (minefield[a][b] == 0) {
-                minefield[a][b] = 1
-                n++
+    /** minefield initialization */
+    private fun initMinefield(px: Int, py: Int) {
+        isInitialized = true
+        // create array of automatically uncovered empty fields
+        val uncoveredEmptyFields = Array<Coordinate?>(nrInitUncoveredEmptyFields){null}
+        uncoveredEmptyFields[0] = Coordinate(px, py)
+        // randomly pick uncoveredEmptyFields
+        var i = 1
+        while (i < nrInitUncoveredEmptyFields) {
+            val a = nextInt(nrInitUncoveredEmptyFields)
+            if (uncoveredEmptyFields[a] != null) {
+                val tx = uncoveredEmptyFields[a]!!.x
+                val ty = uncoveredEmptyFields[a]!!.y
+                // randomly pick offset vector
+                var dx: Int
+                var dy: Int
+                if (tx > 0) {
+                    if (tx < x - 1) {
+                        dx = nextInt(-1, 2)
+                    } else { // tx = this.x - 1
+                        dx = nextInt(-1, 1)
+                    }
+                } else { // tx = 0
+                    dx = nextInt(0, 2)
+                }
+                val values = listOf(-1, 1)
+                if (ty > 0) {
+                    if (ty < y - 1) {
+                        if (dx == 0) {
+                            dy = values[nextInt(values.size)]
+                        } else {
+                            dy = 0
+                        }
+                    } else { // ty = this.y - 1
+                        if (dx == 0) {
+                            dy = -1
+                        } else {
+                            dy = 0
+                        }
+                    }
+                } else { // ty = 0
+                    if (dx == 0) {
+                        dy = 1
+                    } else {
+                        dy = 0
+                    }
+                }
+                // check if uncovered
+                val tmp = Coordinate(uncoveredEmptyFields[a]!!.x + dx, uncoveredEmptyFields[a]!!.y + dy)
+                var isContained = false
+                for (elem in uncoveredEmptyFields) {
+                    if (elem != null) {
+                        if (elem.x == tmp.x && elem.y == tmp.y) {
+                            isContained = true
+                        }
+                    }
+                }
+                if (!isContained) {
+                    var j = 0
+                    while (uncoveredEmptyFields[j] != null) {
+                        j++
+                    }
+                    uncoveredEmptyFields[j] = tmp
+                    i++
+                }
             }
         }
-        // Tile initialization
+        // create array of all automatically uncovered fields
+        val uncoveredFields = Array<Coordinate?>(nrInitUncoveredEmptyFields*9){null}
+        // copy uncovered empty fields
+        for (j in 0 until nrInitUncoveredEmptyFields) {
+            uncoveredFields[j] = uncoveredEmptyFields[j]
+        }
+        // find fields surrounding uncovered empty fields
+        // and append to uncoveredFields array
+        i = 0
+        var j = nrInitUncoveredEmptyFields
+        while (i < nrInitUncoveredEmptyFields) {
+            if (uncoveredEmptyFields[i]!!.x > 0 && uncoveredEmptyFields[i]!!.y > 0) {
+                val tmp = Coordinate(uncoveredEmptyFields[i]!!.x - 1, uncoveredEmptyFields[i]!!.y - 1)
+                var isContained = false
+                for (elem in uncoveredFields) {
+                    if (elem != null) {
+                        if (elem.x == tmp.x && elem.y == tmp.y) {
+                            isContained = true
+                        }
+                    }
+                }
+                if (!isContained) {
+                    uncoveredFields[j] = tmp
+                    j++
+                }
+            }
+            if (uncoveredEmptyFields[i]!!.y > 0) {
+                val tmp = Coordinate(uncoveredEmptyFields[i]!!.x, uncoveredEmptyFields[i]!!.y - 1)
+                var isContained = false
+                for (elem in uncoveredFields) {
+                    if (elem != null) {
+                        if (elem.x == tmp.x && elem.y == tmp.y) {
+                            isContained = true
+                        }
+                    }
+                }
+                if (!isContained) {
+                    uncoveredFields[j] = tmp
+                    j++
+                }
+            }
+            if (uncoveredEmptyFields[i]!!.x < x && uncoveredEmptyFields[i]!!.y > 0) {
+                val tmp = Coordinate(uncoveredEmptyFields[i]!!.x + 1, uncoveredEmptyFields[i]!!.y - 1)
+                var isContained = false
+                for (elem in uncoveredFields) {
+                    if (elem != null) {
+                        if (elem.x == tmp.x && elem.y == tmp.y) {
+                            isContained = true
+                        }
+                    }
+                }
+                if (!isContained) {
+                    uncoveredFields[j] = tmp
+                    j++
+                }
+            }
+            if (uncoveredEmptyFields[i]!!.x > 0) {
+                val tmp = Coordinate(uncoveredEmptyFields[i]!!.x - 1, uncoveredEmptyFields[i]!!.y)
+                var isContained = false
+                for (elem in uncoveredFields) {
+                    if (elem != null) {
+                        if (elem.x == tmp.x && elem.y == tmp.y) {
+                            isContained = true
+                        }
+                    }
+                }
+                if (!isContained) {
+                    uncoveredFields[j] = tmp
+                    j++
+                }
+            }
+            if (uncoveredEmptyFields[i]!!.x < x) {
+                val tmp = Coordinate(uncoveredEmptyFields[i]!!.x + 1, uncoveredEmptyFields[i]!!.y)
+                var isContained = false
+                for (elem in uncoveredFields) {
+                    if (elem != null) {
+                        if (elem.x == tmp.x && elem.y == tmp.y) {
+                            isContained = true
+                        }
+                    }
+                }
+                if (!isContained) {
+                    uncoveredFields[j] = tmp
+                    j++
+                }
+            }
+            if (uncoveredEmptyFields[i]!!.x > 0 && uncoveredEmptyFields[i]!!.y < y) {
+                val tmp = Coordinate(uncoveredEmptyFields[i]!!.x - 1, uncoveredEmptyFields[i]!!.y + 1)
+                var isContained = false
+                for (elem in uncoveredFields) {
+                    if (elem != null) {
+                        if (elem.x == tmp.x && elem.y == tmp.y) {
+                            isContained = true
+                        }
+                    }
+                }
+                if (!isContained) {
+                    uncoveredFields[j] = tmp
+                    j++
+                }
+            }
+            if (uncoveredEmptyFields[i]!!.y < y) {
+                val tmp = Coordinate(uncoveredEmptyFields[i]!!.x, uncoveredEmptyFields[i]!!.y + 1)
+                var isContained = false
+                for (elem in uncoveredFields) {
+                    if (elem != null) {
+                        if (elem.x == tmp.x && elem.y == tmp.y) {
+                            isContained = true
+                        }
+                    }
+                }
+                if (!isContained) {
+                    uncoveredFields[j] = tmp
+                    j++
+                }
+            }
+            if (uncoveredEmptyFields[i]!!.x < x && uncoveredEmptyFields[i]!!.y < y) {
+                val tmp = Coordinate(uncoveredEmptyFields[i]!!.x + 1, uncoveredEmptyFields[i]!!.y + 1)
+                var isContained = false
+                for (elem in uncoveredFields) {
+                    if (elem != null) {
+                        if (elem.x == tmp.x && elem.y == tmp.y) {
+                            isContained = true
+                        }
+                    }
+                }
+                if (!isContained) {
+                    uncoveredFields[j] = tmp
+                    j++
+                }
+            }
+            i++
+        }
+        // fill minefield
+        var n = 0
+        while (n < nrMines) {
+            val a = nextInt(0, x)
+            val b = nextInt(0, y)
+            val tmp = Coordinate(a, b)
+            var isContained = false
+            for (elem in uncoveredFields) {
+                if (elem != null) {
+                    if (elem.x == tmp.x && elem.y == tmp.y) {
+                        isContained = true
+                    }
+                }
+            }
+            if (!isContained) {
+                if (minefield[a][b] == 0) {
+                    minefield[a][b] = 1
+                    n++
+                }
+            }
+        }
+    }
+
+    /** tileGrid initialization */
+    private fun initTileGrid() {
+        // Filling tileGrid with SaperSquaresTile's
         var tmp1 = x-1
         var tmp2 = y-1
         for (i in 0..tmp1) {
             for (j in 0..tmp2) {
-                tileGrid[i][j] = SquareTile(x=i, y=j, state=minefield[i][j])
+                tileGrid[i][j] = SaperSquaresTile(x=i, y=j, state=minefield[i][j])
             }
         }
         // Tile linking
@@ -71,6 +288,13 @@ class SaperSquaresModel(
                 tileGrid[i - 1][j + 1]?.topRightTile = tileGrid[i][j]
             }
         }
+    }
+
+    fun setup(px: Int, py: Int) {
+        // Initialize minefield
+        initMinefield(px, py)
+        // Initialize tileGrid
+        initTileGrid()
         // Calculation of values for each field
         calculateValues(tileGrid[0][0]!!)
     }
@@ -82,27 +306,27 @@ class SaperSquaresModel(
     }
 
     // BUG: only returns array of nulls
-    fun uncover(x: Int, y: Int): List<SquareTile> {
-        var uncoveredSquareTiles: Array<SquareTile?> = arrayOfNulls(x * y)
+    fun uncover(x: Int, y: Int): List<SaperSquaresTile> {
+        var uncoveredSaperSquaresTiles: Array<SaperSquaresTile?> = arrayOfNulls(x * y)
         if (tileGrid[x][y]!!.isCovered && !tileGrid[x][y]!!.isFlagged) {
             if (tileGrid[x][y]!!.state == 9) {
-                uncoveredSquareTiles = uncoverAll(tileGrid[x][y])
+                uncoveredSaperSquaresTiles = uncoverAll(tileGrid[x][y])
             } else {
-                uncoveredSquareTiles = uncoverTile(tileGrid[x][y]!!)
+                uncoveredSaperSquaresTiles = uncoverTile(tileGrid[x][y]!!)
             }
         }
-        return uncoveredSquareTiles.filterNotNull()
+        return uncoveredSaperSquaresTiles.filterNotNull()
     }
 
-    private fun uncoverTile(tile: SquareTile): Array<SquareTile?> {
-        var uncoveredSquareTiles: Array<SquareTile?> = arrayOfNulls(x * y)
+    private fun uncoverTile(tile: SaperSquaresTile): Array<SaperSquaresTile?> {
+        var uncoveredSaperSquaresTiles: Array<SaperSquaresTile?> = arrayOfNulls(x * y)
         // Secondary check of isCovered after uncover method - possibly unnecessary
         if (tile.isCovered) {
             tile.isCovered = false
             if (tile.state == 0) {
                 if (tile.topTile != null) {
                     if (tile.topTile!!.state == 0) {
-                        uncoveredSquareTiles += uncoverTile(tile.topTile!!)
+                        uncoveredSaperSquaresTiles += uncoverTile(tile.topTile!!)
                     } else {
                         if (tile.topTile!!.state != 9) {
                             tile.topTile!!.isCovered = false
@@ -111,7 +335,7 @@ class SaperSquaresModel(
                 }
                 if (tile.bottomTile != null) {
                     if (tile.bottomTile!!.state == 0) {
-                        uncoveredSquareTiles += uncoverTile(tile.bottomTile!!)
+                        uncoveredSaperSquaresTiles += uncoverTile(tile.bottomTile!!)
                     } else {
                         if (tile.bottomTile!!.state != 9) {
                             tile.bottomTile!!.isCovered = false
@@ -120,7 +344,7 @@ class SaperSquaresModel(
                 }
                 if (tile.leftTile != null) {
                     if (tile.leftTile!!.state == 0) {
-                        uncoveredSquareTiles += uncoverTile(tile.leftTile!!)
+                        uncoveredSaperSquaresTiles += uncoverTile(tile.leftTile!!)
                     } else {
                         if (tile.leftTile!!.state != 9) {
                             tile.leftTile!!.isCovered = false
@@ -129,7 +353,7 @@ class SaperSquaresModel(
                 }
                 if (tile.rightTile != null) {
                     if (tile.rightTile!!.state == 0) {
-                        uncoveredSquareTiles += uncoverTile(tile.rightTile!!)
+                        uncoveredSaperSquaresTiles += uncoverTile(tile.rightTile!!)
                     } else {
                         if (tile.rightTile!!.state != 9) {
                             tile.rightTile!!.isCovered = false
@@ -138,25 +362,25 @@ class SaperSquaresModel(
                 }
             }
         }
-        return uncoveredSquareTiles
+        return uncoveredSaperSquaresTiles
     }
 
-    private fun uncoverAll(tile: SquareTile?): Array<SquareTile?> {
-        var uncoveredSquareTiles: Array<SquareTile?> = arrayOfNulls(x * y)
+    private fun uncoverAll(tile: SaperSquaresTile?): Array<SaperSquaresTile?> {
+        var uncoveredSaperSquaresTiles: Array<SaperSquaresTile?> = arrayOfNulls(x * y)
         if (tile != null) {
             if (!tile.triggered) {
                 tile.isCovered = false
                 tile.triggered = true
-                uncoveredSquareTiles += uncoverAll(tile.topTile)
-                uncoveredSquareTiles += uncoverAll(tile.bottomTile)
-                uncoveredSquareTiles += uncoverAll(tile.leftTile)
-                uncoveredSquareTiles += uncoverAll(tile.rightTile)
+                uncoveredSaperSquaresTiles += uncoverAll(tile.topTile)
+                uncoveredSaperSquaresTiles += uncoverAll(tile.bottomTile)
+                uncoveredSaperSquaresTiles += uncoverAll(tile.leftTile)
+                uncoveredSaperSquaresTiles += uncoverAll(tile.rightTile)
             }
         }
-        return uncoveredSquareTiles
+        return uncoveredSaperSquaresTiles
     }
 
-    private fun value(tile: SquareTile): Int {
+    private fun value(tile: SaperSquaresTile): Int {
         var tmpValue = 0
         if (tile.state == 1) {
             tmpValue = 9
@@ -238,12 +462,12 @@ class SaperSquaresModel(
         return tmpValue + 10
     }
 
-    private fun calculateValues(tile: SquareTile) {
+    private fun calculateValues(tile: SaperSquaresTile) {
         tmpValueCalc(tile)
         finalValueCalc(tile)
     }
 
-    private fun tmpValueCalc(tile: SquareTile?) {
+    private fun tmpValueCalc(tile: SaperSquaresTile?) {
         if (tile != null) {
             if (!tile.tmpCalc) {
                 tile.state = value(tile)
@@ -264,7 +488,7 @@ class SaperSquaresModel(
         }
     }
 
-    private fun finalValueCalc(tile: SquareTile?) {
+    private fun finalValueCalc(tile: SaperSquaresTile?) {
         if (tile != null) {
             if (!tile.finalCalc) {
                 tile.state -= 10

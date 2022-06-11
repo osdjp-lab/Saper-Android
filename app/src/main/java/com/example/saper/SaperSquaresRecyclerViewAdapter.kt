@@ -6,14 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
 
-class SquaresRecyclerViewAdapter internal constructor(context: Context?, board: SaperSquaresModel) :
-    RecyclerView.Adapter<SquaresRecyclerViewAdapter.ViewHolder>() {
+class SaperSquaresRecyclerViewAdapter internal constructor(context: Context?, board: SaperSquaresModel) :
+    RecyclerView.Adapter<SaperSquaresRecyclerViewAdapter.ViewHolder>() {
     private val mData: SaperSquaresModel
     private val mInflater: LayoutInflater
     private var mClickListener: ItemClickListener? = null
@@ -33,33 +32,39 @@ class SquaresRecyclerViewAdapter internal constructor(context: Context?, board: 
 
     // binds the data to the TextView in each cell
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        val text = "${position.mod(mData.x)}, ${position.floorDiv(mData.x)}, $position}"
-//        Log.println(Log.INFO, "Tag", text)
-        val tile: SquareTile? = mData.tileGrid[position.mod(mData.x)][position.floorDiv(mData.x)]
-        if (tile!!.isCovered) {
-            if (tile.isFlagged) {
+        val text = "${position.mod(mData.x)}, ${position.floorDiv(mData.x)}, $position}"
+        Log.println(Log.INFO, "Tag", text)
+        val tile: SaperSquaresTile? = mData.tileGrid[position.mod(mData.x)][position.floorDiv(mData.x)]
+        if (tile == null) {
+            val color = ContextCompat.getColor(holder.myTextView.context, R.color.gray_400)
+            holder.myTextView.setBackgroundColor(color)
+            holder.myTextView.text = ""
+        } else {
+            if (tile.isCovered) {
+                if (tile.isFlagged) {
+                    val color = ContextCompat.getColor(holder.myTextView.context, R.color.white)
+                    holder.myTextView.setBackgroundColor(color)
+                    holder.myTextView.text = holder.myTextView.context.getString(R.string.flag)
+                } else {
+                    val color = ContextCompat.getColor(holder.myTextView.context, R.color.gray_400)
+                    holder.myTextView.setBackgroundColor(color)
+                    holder.myTextView.text = ""
+                }
+            } else {
                 val color = ContextCompat.getColor(holder.myTextView.context, R.color.white)
                 holder.myTextView.setBackgroundColor(color)
-                holder.myTextView.text = holder.myTextView.context.getString(R.string.flag)
-            } else {
-                val color = ContextCompat.getColor(holder.myTextView.context, R.color.gray_400)
-                holder.myTextView.setBackgroundColor(color)
-                holder.myTextView.text = ""
-            }
-        } else {
-            val color = ContextCompat.getColor(holder.myTextView.context, R.color.white)
-            holder.myTextView.setBackgroundColor(color)
-            when (tile.state) {
-                0 -> holder.myTextView.text = ""
-                1 -> holder.myTextView.text = "1"
-                2 -> holder.myTextView.text = "2"
-                3 -> holder.myTextView.text = "3"
-                4 -> holder.myTextView.text = "4"
-                5 -> holder.myTextView.text = "5"
-                6 -> holder.myTextView.text = "6"
-                7 -> holder.myTextView.text = "7"
-                8 -> holder.myTextView.text = "8"
-                9 -> holder.myTextView.text = holder.myTextView.context.getString(R.string.bomb)
+                when (tile.state) {
+                    0 -> holder.myTextView.text = ""
+                    1 -> holder.myTextView.text = "1"
+                    2 -> holder.myTextView.text = "2"
+                    3 -> holder.myTextView.text = "3"
+                    4 -> holder.myTextView.text = "4"
+                    5 -> holder.myTextView.text = "5"
+                    6 -> holder.myTextView.text = "6"
+                    7 -> holder.myTextView.text = "7"
+                    8 -> holder.myTextView.text = "8"
+                    9 -> holder.myTextView.text = holder.myTextView.context.getString(R.string.bomb)
+                }
             }
         }
     }
