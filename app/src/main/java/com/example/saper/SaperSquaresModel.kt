@@ -2,14 +2,15 @@ package com.example.saper
 
 import kotlin.random.Random.Default.nextInt
 
-class SaperSquaresModel(
+class SaperSquaresModel (
     val x: Int = 8,
     val y: Int = 8,
     private val nrMines: Int = 10
 ) {
 
     var isInitialized = false
-    var nrInitUncoveredEmptyFields = 4
+    var nrUncoveredFields = 0
+    var nrInitUncoveredEmptyFields = 2
     private var minefield = Array(x) {Array(y) {0}}
     var tileGrid = Array(x){Array<SaperSquaresTile?>(y){null}}
 
@@ -299,20 +300,30 @@ class SaperSquaresModel(
         calculateValues(tileGrid[0][0]!!)
     }
 
-    fun flag(x: Int, y: Int) {
-        if (tileGrid[x][y]!!.isCovered) {
-            tileGrid[x][y]!!.isFlagged = !tileGrid[x][y]!!.isFlagged
+    fun flag(px: Int, py: Int) {
+        if (tileGrid[px][py]!!.isCovered) {
+            tileGrid[px][py]!!.isFlagged = !tileGrid[px][py]!!.isFlagged
         }
     }
 
     // BUG: only returns array of nulls
-    fun uncover(x: Int, y: Int): List<SaperSquaresTile> {
+    fun uncover(px: Int, py: Int): List<SaperSquaresTile> {
         var uncoveredSaperSquaresTiles: Array<SaperSquaresTile?> = arrayOfNulls(x * y)
-        if (tileGrid[x][y]!!.isCovered && !tileGrid[x][y]!!.isFlagged) {
-            if (tileGrid[x][y]!!.state == 9) {
-                uncoveredSaperSquaresTiles = uncoverAll(tileGrid[x][y])
+        if (tileGrid[px][py]!!.isCovered && !tileGrid[px][py]!!.isFlagged) {
+            if (tileGrid[px][py]!!.state == 9) {
+                uncoveredSaperSquaresTiles = uncoverAll(tileGrid[px][py])
+                nrUncoveredFields = x * y
             } else {
-                uncoveredSaperSquaresTiles = uncoverTile(tileGrid[x][y]!!)
+                uncoveredSaperSquaresTiles = uncoverTile(tileGrid[px][py]!!)
+                var tmpUncoveredFields = 0
+                for (row in tileGrid) {
+                    for (item in row) {
+                        if (!item!!.isCovered) {
+                            tmpUncoveredFields += 1
+                        }
+                    }
+                }
+                nrUncoveredFields = tmpUncoveredFields
             }
         }
         return uncoveredSaperSquaresTiles.filterNotNull()
@@ -359,6 +370,18 @@ class SaperSquaresModel(
                             tile.rightTile!!.isCovered = false
                         }
                     }
+                }
+                if (tile.topLeftTile != null) {
+                    uncoveredSaperSquaresTiles += uncoverTile(tile.topLeftTile!!)
+                }
+                if (tile.topRightTile != null) {
+                    uncoveredSaperSquaresTiles += uncoverTile(tile.topRightTile!!)
+                }
+                if (tile.bottomLeftTile != null) {
+                    uncoveredSaperSquaresTiles += uncoverTile(tile.bottomLeftTile!!)
+                }
+                if (tile.bottomRightTile != null) {
+                    uncoveredSaperSquaresTiles += uncoverTile(tile.bottomRightTile!!)
                 }
             }
         }

@@ -33,7 +33,7 @@ class SaperSquaresRecyclerViewAdapter internal constructor(context: Context?, bo
     // binds the data to the TextView in each cell
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val text = "${position.mod(mData.x)}, ${position.floorDiv(mData.x)}, $position}"
-        Log.println(Log.INFO, "Tag", text)
+//        Log.println(Log.INFO, "Tag", text)
         val tile: SaperSquaresTile? = mData.tileGrid[position.mod(mData.x)][position.floorDiv(mData.x)]
         if (tile == null) {
             val color = ContextCompat.getColor(holder.myTextView.context, R.color.gray_400)
