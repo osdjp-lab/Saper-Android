@@ -7,7 +7,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 
-class SaperSquaresGameLossDialog : DialogFragment() {
+class SaperSquaresGameLoseDialog : DialogFragment() {
     internal lateinit var listener: LossDialogListener
 
     interface LossDialogListener {

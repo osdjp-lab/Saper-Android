@@ -2,7 +2,6 @@ package com.example.saper
 
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
@@ -15,7 +14,7 @@ import kotlin.properties.Delegates
 class SaperSquaresActivity : AppCompatActivity(),
                              ItemClickListener,
                              ItemLongClickListener,
-                             SaperSquaresGameLossDialog.LossDialogListener,
+                             SaperSquaresGameLoseDialog.LossDialogListener,
                              SaperSquaresGameWinDialog.WinDialogListener
 {
     private lateinit var recyclerView: RecyclerView
@@ -64,7 +63,7 @@ class SaperSquaresActivity : AppCompatActivity(),
 //        }
 //        Log.println(Log.INFO, "nrUncoveredFields", board.nrUncoveredFields.toString())
         if (board.nrUncoveredFields == x * y) {
-            val dialog = SaperSquaresGameLossDialog()
+            val dialog = SaperSquaresGameLoseDialog()
             dialog.show(this.supportFragmentManager, "Game Over")
         } else if (board.nrUncoveredFields == x * y - nrMines) {
             val dialog = SaperSquaresGameWinDialog()
